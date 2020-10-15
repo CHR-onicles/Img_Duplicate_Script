@@ -6,11 +6,36 @@ import send2trash
 import shutil
 
 
+def binary_search(arr, low, high, x):
+    # Check base case
+    if high >= low:
+
+        mid = (high + low) // 2
+
+        # If element is present at the middle itself
+        if arr[mid] == x:
+            return mid
+
+            # If element is smaller than mid, then it can only
+        # be present in left subarray
+        elif arr[mid] > x:
+            return binary_search(arr, low, mid - 1, x)
+
+            # Else the element can only be present in right subarray
+        else:
+            return binary_search(arr, mid + 1, high, x)
+
+    else:
+        # Element is not present in the array
+        return -1
+
+
 start = time.time()
 
-IMAGE_DIRECTORY = 'B:\\Desktop\\R_wallpapers'
-os.mkdir('B:\\Desktop\\Corrupt_Pics')
-CORRUPT_PICS_DIRECTORY = 'B:\\Desktop\\Corrupt_Pics'
+# IMAGE_DIRECTORY = 'B:\\Desktop\\Img_Duplicate_Script'
+IMAGE_DIRECTORY = 'B:\\Desktop\\Wallpapers'
+# os.mkdir('B:\\Desktop\\Corrupt_Pics')
+# CORRUPT_PICS_DIRECTORY = 'B:\\Desktop\\Corrupt_Pics'
 os.chdir(IMAGE_DIRECTORY)
 
 # Only add picture files to pic_list
@@ -19,59 +44,64 @@ for files in os.listdir():
     if '.jpg' in files or '.png' in files:
         pic_list.append(files)
 
+pic_hashes = list()  # for referral to actual pics using indices
+sorted_pic_hashes = list()  # for efficient binary search
 duplicates = list()
 
-num_of_loops = 0
-num_of_comparisons = 0
-duplicate_set_count = 0
+# duplicate_set_count = 0
 
+#                     if duplicate_counter >= 1 and item2 == pic_list[-1]:
+#                         duplicates.append(item1)
+#                         duplicates.append(' ')  # to separate sets of duplicates
+#                         duplicate_set_count += 1
+#                         break
+#                 elif (img1_hash != img2_hash) and duplicate_counter > 0 and item2 == pic_list[-1]:
+#                     duplicates.append(item1)
+#                     duplicates.append(' ')
+#                     duplicate_set_count += 1
 
-for item1 in pic_list:
-    num_of_loops += 1
-    print(f'Number of loops: {num_of_loops}')
-    if item1 not in duplicates:
-        img1 = Image.open(item1)
-        try:
-            img1_hash = imagehash.average_hash(img1)
-        except FileNotFoundError:
-            pass
-        except OSError:
-            print(item1)
-            shutil.move(IMAGE_DIRECTORY + '\\' + item1, CORRUPT_PICS_DIRECTORY + '\\' + item1)
-        duplicate_counter = 0
+# main  CODE starts here
+# add keyboard Interrupt exception in case it takes too long
+for pic in pic_list:
+    img_hash = imagehash.average_hash(Image.open(pic))
+    pic_hashes.append(str(img_hash))  # have to convert to str for sort() operation
+sorted_pic_hashes = pic_hashes.copy()  # making shallow copy to prevent deletion in one list from affecting the other
+sorted_pic_hashes.sort()
 
-        for item2 in pic_list:
-            num_of_comparisons += 1
-            print(f'Number of comparisons: {num_of_comparisons}')
-            if item2 != item1:
-                img2 = Image.open(item2)
-                try:
-                    img2_hash = imagehash.average_hash(img2)
-                except FileNotFoundError:
-                    pass
-                except OSError:
-                    print(item2)
-                    shutil.move(IMAGE_DIRECTORY + '\\' + item2, CORRUPT_PICS_DIRECTORY + '\\' + item2)
+pop_count = -1
+c_counter = 0
 
-                if img1_hash == img2_hash:
-                    duplicate_counter += 1
-                    duplicates.append(item2)
+for count, h in enumerate(pic_hashes):
+    value = binary_search(sorted_pic_hashes, 0, len(sorted_pic_hashes) - 1, h)
+    print(f'Loop count: {count + 1}')
+    if value == -1:
+        continue
+    else:
+        while value != -1:
+            value = binary_search(sorted_pic_hashes, 0, len(sorted_pic_hashes) - 1, h)
+            c_counter += 1
+            print(f'Comparison count: {c_counter}')
 
-                    if duplicate_counter >= 1 and item2 == pic_list[-1]:
-                        duplicates.append(item1)
-                        duplicates.append(' ')  # to separate sets of duplicates
-                        duplicate_set_count += 1
-                        break
-                elif (img1_hash != img2_hash) and duplicate_counter > 0 and item2 == pic_list[-1]:
-                    duplicates.append(item1)
-                    duplicates.append(' ')
-                    duplicate_set_count += 1
+            if value != -1:
+                sorted_pic_hashes.remove(sorted_pic_hashes[value])
+            pop_count += 1
+
+            if pop_count >= 1:  # ignoring itself, there is another similar hash (duplicate image)
+                if pop_count >= 1 and value != -1:
+                    duplicates.append(pic_list[count])
+
+                # break
+                elif pop_count >= 1 and value == -1:
+                    pop_count = -1
+                    break
+
+            if value == -1:
+                pop_count = -1
 
 
 stop = time.time()
 
 if len(duplicates) > 0:
-    print(f'\nThere are {duplicate_set_count} set(s) of duplicates:')
     print(f'\n{duplicates}')
 
     d_count = 0
@@ -84,7 +114,7 @@ if len(duplicates) > 0:
         else:
             for i in range(1, d_count):
                 inner_count += 1
-                if duplicates[(count - d_count) + inner_count] != ' ':  # to make sure it doesn't append the spaces
+                if duplicates[(count - d_count) + inner_count] != ' ':
                     delete_list.append(duplicates[(count - d_count) + inner_count])
             d_count = 0
             inner_count = 0
@@ -92,18 +122,18 @@ if len(duplicates) > 0:
     print(f'\nDuplicates to be deleted: ')
     print(f'\n {delete_list}')
 
-    choice = input('Extra duplicates will be transferred to recycle bin.\n'
-                   'Do you wish to proceed?: [y/n]  ')
-
-    if choice[0].lower() == 'y':
-        for files in delete_list:
-            send2trash.send2trash(files)
-        print('\nAll extra duplicate files deleted successfully!')
-    else:
-        print('\nOperation Cancelled...')
-
-else:
-    print('\nThere are no image duplicates!')
+#     choice = input('Extra duplicates will be transferred to recycle bin.\n'
+#                    'Do you wish to proceed?: [y/n]  ')
+#
+#     if choice[0].lower() == 'y':
+#         for files in delete_list:
+#             send2trash.send2trash(files)
+#         print('\nAll extra duplicate files deleted successfully!')
+#     else:
+#         print('\nOperation Cancelled...')
+#
+# else:
+#     print('\nThere are no image duplicates!')
 
 
 elapsed_time = stop - start
