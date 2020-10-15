@@ -32,8 +32,9 @@ def binary_search(arr, low, high, x):
 
 start = time.time()
 
-# IMAGE_DIRECTORY = 'B:\\Desktop\\Img_Duplicate_Script'
-IMAGE_DIRECTORY = 'B:\\Desktop\\Wallpapers'
+IMAGE_DIRECTORY = 'B:\\Desktop\\Img_Duplicate_Script'
+# IMAGE_DIRECTORY = 'B:\\Desktop\\Wallpapers'
+# IMAGE_DIRECTORY = 'B:\\Desktop\\R_wallpapers'
 # os.mkdir('B:\\Desktop\\Corrupt_Pics')
 # CORRUPT_PICS_DIRECTORY = 'B:\\Desktop\\Corrupt_Pics'
 os.chdir(IMAGE_DIRECTORY)
@@ -84,15 +85,15 @@ for count, h in enumerate(pic_hashes):
 
             if value != -1:
                 sorted_pic_hashes.remove(sorted_pic_hashes[value])
-            pop_count += 1
+                pop_count += 1
 
             if pop_count >= 1:  # ignoring itself, there is another similar hash (duplicate image)
                 if pop_count >= 1 and value != -1:
                     duplicates.append(pic_list[count])
 
-                # break
                 elif pop_count >= 1 and value == -1:
                     pop_count = -1
+                    duplicates.append(' ')
                     break
 
             if value == -1:
@@ -104,36 +105,34 @@ stop = time.time()
 if len(duplicates) > 0:
     print(f'\n{duplicates}')
 
-    d_count = 0
-    inner_count = 0
-    delete_list = list()
+    # d_count = 0
+    # inner_count = 0
+    # delete_list = list()
 
-    for count, item in enumerate(duplicates):
-        if item != ' ':
-            d_count += 1
-        else:
-            for i in range(1, d_count):
-                inner_count += 1
-                if duplicates[(count - d_count) + inner_count] != ' ':
-                    delete_list.append(duplicates[(count - d_count) + inner_count])
-            d_count = 0
-            inner_count = 0
+    # for count, item in enumerate(duplicates):
+    #     if item != ' ':
+    #         d_count += 1
+    #     else:
+    #         for i in range(1, d_count):
+    #             inner_count += 1
+    #             if duplicates[(count - d_count) + inner_count] != ' ':
+    #                 delete_list.append(duplicates[(count - d_count) + inner_count])
+    #         d_count = 0
+    #         inner_count = 0
 
-    print(f'\nDuplicates to be deleted: ')
-    print(f'\n {delete_list}')
+    choice = input('Extra duplicates will be transferred to recycle bin.\n'
+                   'Do you wish to proceed?: [y/n]  ')
 
-#     choice = input('Extra duplicates will be transferred to recycle bin.\n'
-#                    'Do you wish to proceed?: [y/n]  ')
-#
-#     if choice[0].lower() == 'y':
-#         for files in delete_list:
-#             send2trash.send2trash(files)
-#         print('\nAll extra duplicate files deleted successfully!')
-#     else:
-#         print('\nOperation Cancelled...')
-#
-# else:
-#     print('\nThere are no image duplicates!')
+    if choice[0].lower() == 'y':
+        for files in duplicates:
+            if files != ' ':
+                send2trash.send2trash(files)
+        print('\nAll extra duplicate files deleted successfully!')
+    else:
+        print('\nOperation Cancelled...')
+
+else:
+    print('\nThere are no image duplicates!')
 
 
 elapsed_time = stop - start
