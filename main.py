@@ -31,7 +31,7 @@ def binary_search(arr, low, high, x):
 
 start = time.time()
 
-IMAGE_DIRECTORY = 'B:\\Desktop\\Img_Duplicate_Script'
+IMAGE_DIRECTORY = 'B:\\Desktop\\JPEG Graphics file'
 os.chdir(IMAGE_DIRECTORY)
 
 # Only add picture files to pic_list
@@ -46,13 +46,17 @@ duplicates = list()
 
 # main CODE starts here
 for pic in pic_list:
-    img_hash = imagehash.average_hash(Image.open(pic))
-    pic_hashes.append(str(img_hash))  # have to convert to str for sort() operation
+    try:
+        img_hash = imagehash.average_hash(Image.open(pic))
+        pic_hashes.append(str(img_hash))  # have to convert to str for sort() operation
+    except OSError:
+        send2trash.send2trash(pic)
+
 sorted_pic_hashes = pic_hashes.copy()  # making shallow copy to prevent deletion in one list from affecting the other
 sorted_pic_hashes.sort()
 
 pop_count = -1
-# c_counter = 0
+# c_counter = 0  # for debugging
 
 for count, h in enumerate(pic_hashes):
     value = binary_search(sorted_pic_hashes, 0, len(sorted_pic_hashes) - 1, h)
@@ -62,7 +66,7 @@ for count, h in enumerate(pic_hashes):
     else:
         while value != -1:
             value = binary_search(sorted_pic_hashes, 0, len(sorted_pic_hashes) - 1, h)
-            # c_counter += 1
+            # c_counter += 1  # for debugging
             # print(f'Comparison count: {c_counter}')  # for debugging
 
             if value != -1:
