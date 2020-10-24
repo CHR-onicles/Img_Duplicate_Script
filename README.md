@@ -1,5 +1,5 @@
-## Image Duplicate Script
-Program to detect and delete duplicated images using image hashes.
+# Image Duplicate Script
+Program to detect and delete duplicate images using image hashes.
 
 ### Requirements
 - <i>imagehash</i> package
