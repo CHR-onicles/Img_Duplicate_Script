@@ -31,13 +31,13 @@ def binary_search(arr, low, high, x):
 
 start = time.time()
 
-IMAGE_DIRECTORY = 'B:\\Desktop\\JPEG Graphics file'
+IMAGE_DIRECTORY = 'B:\\Desktop\\Wallpapers'  # replace
 os.chdir(IMAGE_DIRECTORY)
 
 # Only add picture files to pic_list
 pic_list = list()
 for files in os.listdir():
-    if '.jpg' in files or '.png' in files:
+    if '.jpg' in files or '.png' in files or '.jfif' in files:
         pic_list.append(files)
 
 pic_hashes = list()  # for referral to actual pics using indices
@@ -85,7 +85,6 @@ for count, h in enumerate(pic_hashes):
             if value == -1:
                 pop_count = -1
 
-
 stop = time.time()
 
 if len(duplicates) > 0:
@@ -104,7 +103,6 @@ if len(duplicates) > 0:
 
 else:
     print('\nThere are no image duplicates!')
-
 
 elapsed_time = stop - start
 print(f'\nElapsed time: {round(elapsed_time, 2)} seconds')
