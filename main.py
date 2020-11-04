@@ -106,3 +106,4 @@ else:
 
 elapsed_time = stop - start
 print(f'\nElapsed time: {round(elapsed_time, 2)} seconds')
+os.system('pause')
