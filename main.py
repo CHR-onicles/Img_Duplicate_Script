@@ -1,8 +1,29 @@
 import imagehash
 from PIL import Image
-import os
+import os, sys
 import time
 import send2trash
+import pyperclip
+
+# TODO: Update README on using batch script with program
+
+IMAGE_DIRECTORY = ''  # replace
+# TODO: Update README on what args IMAGE_DIRECTORY takes
+
+if len(sys.argv) > 1:
+    possible_path = sys.argv[1]
+    if os.path.isdir(possible_path):
+        IMAGE_DIRECTORY = possible_path
+        print('OK Path')
+        # exit()
+
+else: # if no args given, copy path from clipboard
+    possible_path = pyperclip.paste()
+    if os.path.isdir(possible_path):
+        IMAGE_DIRECTORY = possible_path
+        print('Good Path')
+        # exit()
+
 
 
 def binary_search(arr, low, high, x):
@@ -31,7 +52,7 @@ def binary_search(arr, low, high, x):
 
 start = time.time()
 
-IMAGE_DIRECTORY = 'B:\\Desktop\\Wallpapers'  # replace
+
 os.chdir(IMAGE_DIRECTORY)
 
 # Only add picture files to pic_list
@@ -58,6 +79,7 @@ sorted_pic_hashes.sort()
 pop_count = -1
 # c_counter = 0  # for debugging
 
+# TODO: Update code below to show list of all duplicates
 for count, h in enumerate(pic_hashes):
     value = binary_search(sorted_pic_hashes, 0, len(sorted_pic_hashes) - 1, h)
     # print(f'Loop count: {count + 1}')  # for debugging
@@ -87,6 +109,7 @@ for count, h in enumerate(pic_hashes):
 
 stop = time.time()
 
+# TODO: Update code below to delete duplicate while leaving one copy
 if len(duplicates) > 0:
     print(f'\n{duplicates}')
 
@@ -107,3 +130,4 @@ else:
 elapsed_time = stop - start
 print(f'\nElapsed time: {round(elapsed_time, 2)} seconds')
 os.system('pause')
+# TODO: Create into GUI with PyQt
