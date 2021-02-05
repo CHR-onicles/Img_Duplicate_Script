@@ -1,9 +1,15 @@
-import imagehash
-from PIL import Image
-import os, sys
+import os
+import sys
 import time
-import send2trash
+
+from PIL import Image
+import imagehash
 import pyperclip
+import send2trash
+
+
+
+
 
 # TODO: Update README on using batch script with program
 
@@ -130,4 +136,4 @@ else:
 elapsed_time = stop - start
 print(f'\nElapsed time: {round(elapsed_time, 2)} seconds')
 os.system('pause')
-# TODO: Create into GUI with PyQt
+# TODO: Optimize and Create into GUI with PyQt
