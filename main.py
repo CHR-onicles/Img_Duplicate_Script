@@ -1,7 +1,8 @@
-import imagehash
-from PIL import Image
 import os
 import time
+
+import imagehash
+from PIL import Image
 import send2trash
 
 
